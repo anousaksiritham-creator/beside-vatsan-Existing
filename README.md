@@ -27,6 +27,12 @@ Live: https://anousaksiritham-creator.github.io/beside-vatsan-Existing/. It is d
 | Front / Rear / Left / Right | parallel | level lines −0.40 / ±0.00 / +3.50 / +7.00 / ridge |
 | Section A-A (long, x = 4.80) / Section B-B (cross, z = 12.00) | parallel | cut poché + roof cut line |
 
+**Style:** *Realistic* (the default) or *White*. The realistic style applies only to Perspective and Isometric. Plans, elevations and sections always stay white technical drawings.
+- Realistic materials follow the site photos (16-11-2026): white render front and sides, ochre rear block and annex, dark Lao flat tiles, red-brown fascia, louvred timber shutters, teak folding doors, encaustic veranda tiles, terracotta garden paving, herringbone brick, frangipani and banana.
+- Textures are drawn in code (`js/realism.js`), so the folder has no image files.
+- The *Time of day* slider moves the sun for Luang Prabang in mid-November. True north comes from the CAD north arrow, 37.6° clockwise from plan up (`SUN` in `building-data.js`).
+- Ambient occlusion runs in Perspective on desktop only. Phones get lighter shadows and textures.
+
 Layers panel: roof, ceiling, first floor, landscape, context, dimensions/labels, edges. **Save image** downloads a PNG of the current view.
 
 ## Edit
@@ -42,7 +48,8 @@ z runs from the road (0) to the rear boundary (28.5).
 
 | File | Role |
 |---|---|
-| `js/model.js` | builds the geometry, plus the cut poché |
+| `js/model.js` | builds the geometry and cut poché; each mesh has a white material and a realistic `role` |
+| `js/realism.js` | realistic materials by role (procedural textures), sun position, sky |
 | `js/dimensions.js` | dimensions, level marks, labels |
 | `js/views.js` | camera presets, clipping, layer visibility |
 | `js/main.js` | renderer and UI |

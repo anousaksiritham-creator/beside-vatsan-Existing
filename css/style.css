@@ -23,6 +23,16 @@ aside h2 { font-size: 13px; margin: 14px 0 8px; }
 #views button:hover, #shot:hover { border-color: #b9c0c4; }
 #views button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
 #views button.on small { color: #c9d0d4; }
+#style { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+#style button { border: 1px solid var(--line); background: #fafbfa; border-radius: 6px; padding: 6px 7px;
+  font: inherit; font-size: 12.5px; cursor: pointer; color: var(--ink); }
+#style button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+#sunrow { margin-top: 10px; font-size: 12.5px; }
+#sunrow label { display: block; }
+#sunrow #sunlbl { color: var(--muted); font-size: 11.5px; }
+#sunrow input { width: 100%; margin: 6px 0 2px; accent-color: var(--ink); }
+#sunrow small { display: block; font-size: 11px; line-height: 1.35; }
+#sunrow.off input, #sunrow.off label { opacity: .4; pointer-events: none; }
 #layers label { display: flex; align-items: center; gap: 6px; font-size: 13px; padding: 3px 0; }
 #layers label small { margin-left: auto; font-size: 11px; }
 #shot { width: 100%; margin-top: 12px; }

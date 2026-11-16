@@ -156,7 +156,10 @@ export const SITE = {
   templeWall: { x: [11.9, 12.2], z: [0, 28.5], h: 1.6 },
   rearFence: { x: [0, 11.9], z: [28.4, 28.5], h: 1.8 },
   patio: { x: [0, 11.9], z: [23.0, 26.0] },
-  trees: [ { x: 10.33, z: 25.15, r: 2.2 }, { x: 8.33, z: 27.25, r: 1.9 }, { x: 11.03, z: 27.65, r: 1.5 } ],
+  // frangipani (photos: several in the rear garden) and a banana plant
+  trees: [ { x: 10.33, z: 25.15, r: 2.2 }, { x: 8.33, z: 27.25, r: 1.9 }, { x: 11.03, z: 27.65, r: 1.5 },
+          { x: 2.2, z: 27.0, r: 1.8 } ],
+  bananas: [ { x: 0.8, z: 25.2 }, { x: 5.6, z: 27.8 } ],
   spiritHouse: { x: 11.45, z: 26.8 },
   neighbours: [
     { id: 'Left neighbour', x: [-9.5, -0.05], z: [2.0, 16.0], h: 6.5 },
@@ -164,6 +167,10 @@ export const SITE = {
   ],
   temple: { x: [17.0, 26.0], z: [6.0, 20.0], h: 4.5, label: 'Wat Sensoukharam' },
 };
+
+// Sun for the realistic style. north: angle of true north clockwise from plan "up" (data +z, toward the rear),
+// from the CAD north arrow (EX-NORTH) ≈ 37.6°. Default time: mid-November, 15:00 local (UTC+7).
+export const SUN = { lat: 19.89, lon: 102.135, tz: 7, north: 37.6, day: 320, hour: 15 };
 
 export const ROOMS = [
   { code: 'G01', en: 'Front veranda', area: 17.4, floor: 'GF', x: 4.95, z: 1.5 },

@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { clipPlanes, clippedMaterials, groups, makePoche } from './model.js';
 import { annot } from './dimensions.js';
+import { applyStyle } from './realism.js';
 
 const C = new THREE.Vector3(5.95, 3.5, -12.5);   // building centre (three coords)
 
@@ -38,6 +39,8 @@ export class ViewManager {
     this.ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, -500, 500);
     this.camera = this.persp; this.controls = null; this.size = 30;
     this.overrides = {};       // user layer toggles: name → bool
+    this.realistic = true;     // realistic style in perspective / isometric (technical views stay white)
+    this.onStyle = null;       // callback(isReal) for lights / sky
   }
   aspect() { return this.dom.clientWidth / Math.max(1, this.dom.clientHeight); }
   resize() {
@@ -100,9 +103,11 @@ export class ViewManager {
       g.visible = vis;
       g.traverse(o => { if (o.isCSS2DObject) o.visible = vis; });   // CSS2D ignores parent visibility
     }
-    // edges toggle
+    // style: realistic materials only in the free (rotating) views
     const edges = this.overrides.edges !== false;
-    for (const g of Object.values(groups)) g.traverse(o => { if (o.userData.isEdge) o.visible = edges; });
+    this.isReal = this.realistic && !!V.rotate;
+    for (const g of Object.values(groups)) applyStyle(g, this.isReal, edges);
+    this.onStyle?.(this.isReal);
   }
   update() { this.controls?.update(); }
 }
