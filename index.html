@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LPB-001 3D Viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<header>
+  <div class="title">
+    <h1>LPB-001 · Existing building, Option A</h1>
+    <p>Whole building, 2 storeys, 8.9 × 15 m · Ban Vat Nong, Luang Prabang · measured 16-11-2026</p>
+  </div>
+  <div class="meta"><span id="viewname"></span><span id="proj"></span></div>
+</header>
+<main>
+  <aside>
+    <h2>Views</h2>
+    <div id="views"></div>
+    <h2>Layers</h2>
+    <div id="layers">
+      <label><input type="checkbox" data-layer="roof" checked> Roof</label>
+      <label><input type="checkbox" data-layer="ceiling" checked> Ceiling</label>
+      <label><input type="checkbox" data-layer="ff" checked> First floor</label>
+      <label><input type="checkbox" data-layer="landscape" checked> Landscape</label>
+      <label><input type="checkbox" data-layer="context" checked> Context</label>
+      <label><input type="checkbox" data-layer="annotations" checked> Dimensions &amp; labels</label>
+      <label><input type="checkbox" data-layer="edges" checked> Edges</label>
+    </div>
+    <button id="shot" class="ghost">Save image (PNG)</button>
+    <div class="note">
+      <p>Perspective / isometric: left-drag rotate, right-drag pan, wheel zoom.<br>Plans, elevations, sections: drag to pan, wheel to zoom.</p>
+      <p>Plans drawn from exiting_v2.dwg. Levels: ground −0.40, GF ±0.00, 1F +3.50, stair 20 × 175 mm.
+      Door/window sizes, eave level and roof form are approximate (to measure).</p>
+    </div>
+  </aside>
+  <div id="stage"></div>
+</main>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
