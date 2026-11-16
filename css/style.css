@@ -41,6 +41,8 @@ aside h2 { font-size: 13px; margin: 14px 0 8px; }
   background: rgba(255,255,255,.82); border: 1px solid #e3e6e4; border-radius: 4px; padding: 2px 5px; }
 .room i { color: var(--muted); font-style: normal; font-family: 'Inter', sans-serif; font-size: 10px; }
 .room .ar { display: block; color: var(--accent); font: 600 10px 'Inter', sans-serif; }
+.grid { width: 20px; height: 20px; line-height: 18px; text-align: center; border: 1.5px solid #5b636a;
+  border-radius: 50%; background: #fff; font: 600 11px 'Inter', sans-serif; color: #2f3438; }
 .ctx { color: var(--muted); font-size: 12px; white-space: nowrap; }
 @media (max-width: 720px) {
   main { flex-direction: column-reverse; height: auto; }

@@ -24,10 +24,11 @@ function seg(pts, group, m = dimMat) {
 }
 
 // Plan dimension: a,b in (x,z); off = (dx,dz) offset of the dimension line.
-function planDim(d) {
-  const y = d.tag === '1F' ? D.LEVELS.ff + 1.25 : 1.25;
-  const g = A('dim-' + d.tag);
-  const [ax, az] = d.a, [bx, bz] = d.b, [ox, oz] = d.off;
+function planDim(d, grp, yy, offset, alongZ = false) {
+  const y = yy ?? (d.tag === '1F' ? D.LEVELS.ff + 1.25 : 1.25);
+  const g = grp ?? A('dim-' + d.tag);
+  const [ax, az] = d.a, [bx, bz] = d.b;
+  const [ox, oz] = offset !== undefined ? (alongZ ? [offset, 0] : [0, offset]) : d.off;
   const p1 = v(ax + ox, y, az + oz), p2 = v(bx + ox, y, bz + oz);
   seg([p1, p2], g);
   if (ox || oz) { seg([v(ax, y, az), p1], g); seg([v(bx, y, bz), p2], g); }
@@ -90,8 +91,32 @@ function cadLinework() {
   }
 }
 
+// grid lines, bubbles and chained grid dimensions (column centre to centre)
+const gridMat = new THREE.LineDashedMaterial({ color: 0x8a939b, dashSize: 0.4, gapSize: 0.15 });
+function gridDims(fl) {
+  const g = A('dim-' + fl), y = (fl === '1F' ? D.LEVELS.ff : 0) + 1.25;
+  const xs = D.GRID.x, zs = fl === '1F' ? D.GRID.z.filter(z => D.GRID.zFF.includes(z.id)) : D.GRID.z;
+  const x0 = xs[0].v, x1 = xs[xs.length - 1].v, z0 = zs[0].v, z1 = zs[zs.length - 1].v;
+  const fmt = (n) => n.toFixed(2);
+  // grid lines + bubbles
+  for (const gx of xs) {
+    seg([v(gx.v, y, z0 - 3.4), v(gx.v, y, z1 + 1.0)], g, gridMat);
+    label(gx.id, 'grid', v(gx.v, y, z0 - 3.9), g);
+  }
+  for (const gz of zs) {
+    seg([v(x0 - 3.4, y, gz.v), v(x1 + 1.0, y, gz.v)], g, gridMat);
+    label(gz.id, 'grid', v(x0 - 3.9, y, gz.v), g);
+  }
+  // chains: across (front side) and along (left side), plus overall
+  for (let i = 0; i < xs.length - 1; i++) planDim({ tag: fl, a: [xs[i].v, z0], b: [xs[i + 1].v, z0], off: [0, -1.5 - (z0 - 0.6) * 0], t: fmt(xs[i + 1].v - xs[i].v) }, g, y, -1.6);
+  planDim({ tag: fl, a: [x0, z0], b: [x1, z0], t: fmt(x1 - x0) }, g, y, -2.5);
+  for (let i = 0; i < zs.length - 1; i++) planDim({ tag: fl, a: [x0, zs[i].v], b: [x0, zs[i + 1].v], t: fmt(zs[i + 1].v - zs[i].v) }, g, y, -1.6, true);
+  planDim({ tag: fl, a: [x0, z0], b: [x0, z1], t: fmt(z1 - z0) }, g, y, -2.5, true);
+}
+
 export function buildAnnotations(scene, ridge) {
   cadLinework();
+  gridDims('GF'); gridDims('1F');
   for (const d of D.DIMS) planDim(d);
   for (const s of ['front', 'rear', 'left', 'right']) levelMarks(s, ridge);
   roomLabels();

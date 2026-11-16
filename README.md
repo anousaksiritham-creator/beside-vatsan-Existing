@@ -23,7 +23,7 @@ Live: https://anousaksiritham-creator.github.io/beside-vatsan-Existing/. It is d
 |---|---|---|
 | Perspective | perspective | free orbit, roof, site, context |
 | Isometric | parallel | orbit allowed |
-| Plan GF / Plan 1F | parallel, cut at +1.20 above floor | solid wall poché, CAD-style dimensions, room names + areas |
+| Plan GF / Plan 1F | parallel, cut at +1.20 above floor | CAD linework, column grid A–D / 1–9 with centre-to-centre dimensions, room names + areas |
 | Front / Rear / Left / Right | parallel | level lines −0.40 / ±0.00 / +3.50 / +7.00 / ridge |
 | Section A-A (long, x = 4.80) / Section B-B (cross, z = 12.00) | parallel | cut poché + roof cut line |
 
@@ -35,7 +35,7 @@ All numbers live in **`js/building-data.js`** (metres):
 
 - `LEVELS`: ground −0.40, GF ±0.00, 1F +3.50, eave, roof pitch
 - `WALLS`: axis-aligned wall rectangles; `open` = doors/windows (`s` = range along the wall, `sill`/`head` from the wall base)
-- `SLABS`, `COLUMNS`, `ROOFS`, `STAIR` (20 risers × 175 mm), `SITE`, `ROOMS`, `DIMS`, `LEVEL_MARKS`
+- `GRID` (column centres; columns and plan dimensions are generated from it), `SLABS`, `ROOFS`, `STAIR` (20 risers × 175 mm), `SITE`, `ROOMS`, `DIMS`, `LEVEL_MARKS`
 
 CAD → data: `x = (cadX + 106492) / 1000` (upper-floor plan: `cadX + 80922`), `z = (cadY − 12950) / 1000`.
 z runs from the road (0) to the rear boundary (28.5).

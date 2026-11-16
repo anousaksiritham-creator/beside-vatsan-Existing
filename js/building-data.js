@@ -110,14 +110,28 @@ export const SLABS = [
 // Upper floor slab is built separately (it has the stair opening).
 export const FF_SLAB = { x: [0.5, 9.4], z: [2.5, 17.5] };
 
+// Column grid from exiting_v2 (200 × 200 columns, centre lines). Plan dimensions follow this grid.
+export const GRID = {
+  x: [ { id: 'A', v: 0.6 }, { id: 'B', v: 3.8 }, { id: 'C', v: 5.8 }, { id: 'D', v: 9.3 } ],
+  z: [ { id: '1', v: 0.6 }, { id: '2', v: 2.6 }, { id: '3', v: 5.4 }, { id: '4', v: 8.4 }, { id: '5', v: 10.2 },
+       { id: '6', v: 13.9 }, { id: '7', v: 17.4 }, { id: '8', v: 20.4 }, { id: '9', v: 22.4 } ],
+  zFF: ['2', '3', '4', '5', '6', '7', '8'],        // grid lines that exist on the upper floor
+};
+const gx = (id) => GRID.x.find(g => g.id === id).v, gz = (id) => GRID.z.find(g => g.id === id).v;
+
+// columns at grid intersections (from CAD). h = top of column above its floor.
 export const COLUMNS = [
-  // front veranda posts (white, from Street View)
-  { x: 0.55, z: 0.6, h: 2.9, s: 0.25 }, { x: 3.75, z: 0.6, h: 2.9, s: 0.25 },
-  { x: 5.95, z: 0.6, h: 2.9, s: 0.25 }, { x: 9.35, z: 0.6, h: 2.9, s: 0.25 },
-  // free-standing hall columns
-  { x: 3.7, z: 4.55, h: 3.25, s: 0.2 }, { x: 5.75, z: 4.55, h: 3.25, s: 0.2 },
-  // rear projecting-roof posts (timber)
-  { x: 0.6, z: 22.35, h: 2.8, s: 0.18 }, { x: 3.2, z: 22.35, h: 2.8, s: 0.18 }, { x: 5.8, z: 22.35, h: 2.8, s: 0.18 },
+  // front veranda posts, grid 1
+  ...['A', 'B', 'C', 'D'].map(c => ({ x: gx(c), z: gz('1'), h: 2.9, s: 0.2 })),
+  // ground floor grid 2–7, all four lines (hall columns on B and C)
+  ...['2', '3', '4', '5', '6', '7'].flatMap(r => ['A', 'B', 'C', 'D'].map(c => ({ x: gx(c), z: gz(r), h: 3.25, s: 0.2 }))),
+  // annex corners, grid 8
+  ...['A', 'B', 'C'].map(c => ({ x: gx(c), z: gz('8'), h: 3.25, s: 0.2 })),
+  // rear projecting-roof posts, grid 9 (middle post at x 3.20 per CAD)
+  { x: 0.6, z: gz('9'), h: 2.7, s: 0.2 }, { x: 3.2, z: gz('9'), h: 2.7, s: 0.2 }, { x: 5.8, z: gz('9'), h: 2.7, s: 0.2 },
+  // upper floor columns (in walls), floor: '1F'
+  ...['2', '3', '4', '5', '6', '7'].flatMap(r => ['A', 'B', 'C', 'D'].map(c => ({ x: gx(c), z: gz(r), h: 3.3, s: 0.2, floor: '1F' }))),
+  { x: gx('A'), z: gz('8'), h: 2.85, s: 0.2, floor: '1F' }, { x: gx('C'), z: gz('8'), h: 2.85, s: 0.2, floor: '1F' },
 ];
 
 export const ROOFS = [
@@ -175,33 +189,11 @@ export const ROOMS = [
 ];
 
 // Plan dimensions: from/to points (x,z), offset direction, floor tag.
+// Extra plan dimensions (grid dimensions are generated from GRID in dimensions.js).
 export const DIMS = [
-  // GF
-  { tag: 'GF', a: [0.5, 0], b: [9.4, 0], off: [0, -1.6], t: '8.90' },
-  { tag: 'GF', a: [0.6, 2.5], b: [5.7, 2.5], off: [0, -0.9], t: '5.10' },
-  { tag: 'GF', a: [5.8, 2.5], b: [9.3, 2.5], off: [0, -0.9], t: '3.50' },
-  { tag: 'GF', a: [0.5, 0], b: [0.5, 0.5], off: [-1.3, 0], t: '0.50' },
-  { tag: 'GF', a: [0.5, 0.5], b: [0.5, 2.5], off: [-1.3, 0], t: '2.00' },
-  { tag: 'GF', a: [0.5, 2.5], b: [0.5, 17.5], off: [-1.3, 0], t: '15.00' },
-  { tag: 'GF', a: [0.5, 17.5], b: [0.5, 20.5], off: [-1.3, 0], t: '3.00' },
-  { tag: 'GF', a: [0.5, 20.5], b: [0.5, 23.0], off: [-1.3, 0], t: '2.50' },
-  { tag: 'GF', a: [0.5, 0], b: [0.5, 23.0], off: [-2.4, 0], t: '23.00' },
-  { tag: 'GF', a: [9.4, 15.0], b: [11.9, 15.0], off: [0, 0], t: '2.50' },
+  { tag: 'GF', a: [9.4, 15.0], b: [11.9, 15.0], off: [0, 0], t: '2.50 passage' },
   { tag: 'GF', a: [0, 28.5], b: [11.9, 28.5], off: [0, 1.0], t: '11.90 (plot)' },
-  { tag: 'GF', a: [11.9, 0], b: [11.9, 28.5], off: [1.6, 0], t: '28.50 (plot)' },
-  // 1F
-  { tag: '1F', a: [0.5, 2.5], b: [9.4, 2.5], off: [0, -1.6], t: '8.90' },
-  { tag: '1F', a: [0.6, 2.5], b: [3.8, 2.5], off: [0, -0.9], t: '3.20' },
-  { tag: '1F', a: [3.9, 2.5], b: [5.7, 2.5], off: [0, -0.9], t: '1.80' },
-  { tag: '1F', a: [5.8, 2.5], b: [9.3, 2.5], off: [0, -0.9], t: '3.50' },
-  { tag: '1F', a: [0.5, 2.6], b: [0.5, 6.6], off: [-1.0, 0], t: '4.00' },
-  { tag: '1F', a: [0.5, 6.6], b: [0.5, 9.4], off: [-1.0, 0], t: '2.80' },
-  { tag: '1F', a: [0.5, 9.5], b: [0.5, 13.8], off: [-1.0, 0], t: '4.30' },
-  { tag: '1F', a: [0.5, 13.9], b: [0.5, 17.4], off: [-1.0, 0], t: '3.50' },
-  { tag: '1F', a: [0.5, 17.5], b: [0.5, 20.5], off: [-1.0, 0], t: '3.00' },
-  { tag: '1F', a: [9.4, 2.6], b: [9.4, 8.4], off: [1.0, 0], t: '5.80' },
-  { tag: '1F', a: [9.4, 8.5], b: [9.4, 10.1], off: [1.0, 0], t: '1.60' },
-  { tag: '1F', a: [9.4, 10.2], b: [9.4, 17.4], off: [1.0, 0], t: '7.20' },
+  { tag: 'GF', a: [11.9, 0], b: [11.9, 28.5], off: [2.6, 0], t: '28.50 (plot)' },
 ];
 
 export const LEVEL_MARKS = [

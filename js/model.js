@@ -346,7 +346,10 @@ export function buildModel(scene) {
   for (const w of D.WALLS) buildWall(w);
   for (const s of D.SLABS) box(s.x[0], s.x[1], s.y[0], s.y[1], s.z[0], s.z[1], M.floor, G(s.y[0] >= 3 ? 'ff' : 'gf'));
   ffSlab(); stair(); demolished(); fixtures();
-  for (const c of D.COLUMNS) box(c.x - c.s / 2, c.x + c.s / 2, 0, c.h, c.z - c.s / 2, c.z + c.s / 2, M.wall, G('gf'));
+  for (const c of D.COLUMNS) {
+    const y0 = c.floor === '1F' ? D.LEVELS.ff : 0;
+    box(c.x - c.s / 2, c.x + c.s / 2, y0, y0 + c.h, c.z - c.s / 2, c.z + c.s / 2, M.wall, G(c.floor === '1F' ? 'ff' : 'gf'));
+  }
   let ridge = 0;
   for (const r of D.ROOFS) {
     if (r.type === 'hip') ridge = Math.max(ridge, hipRoof(r));
