@@ -169,8 +169,8 @@ export const SITE = {
 };
 
 // Sun for the realistic style. north: angle of true north clockwise from plan "up" (data +z, toward the rear),
-// from the CAD north arrow (EX-NORTH) ≈ 37.6°. Default time: mid-November, 15:00 local (UTC+7).
-export const SUN = { lat: 19.89, lon: 102.135, tz: 7, north: 37.6, day: 320, hour: 15 };
+// from the CAD north arrow (EX-NORTH) ≈ 37.6°. Default time: mid-November, 10:00 local (UTC+7), when the front (south-east) is in sun.
+export const SUN = { lat: 19.89, lon: 102.135, tz: 7, north: 37.6, day: 320, hour: 10 };
 
 export const ROOMS = [
   { code: 'G01', en: 'Front veranda', area: 17.4, floor: 'GF', x: 4.95, z: 1.5 },

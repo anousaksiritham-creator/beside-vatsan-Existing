@@ -4,7 +4,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { buildModel, clippedMaterials } from './model.js';
+import { buildModel } from './model.js';
 import { buildAnnotations } from './dimensions.js';
 import { ViewManager, VIEWS } from './views.js';
 import { MOBILE, sunPosition, sunVector, skyTexture } from './realism.js';
@@ -51,20 +51,15 @@ function placeSun() {
   const dir = sunVector(az, Math.max(el, 2), D.SUN.north);
   sun.position.copy(sun.target.position).addScaledVector(dir, 70);
   const day = THREE.MathUtils.clamp(el / 25, 0, 1);
-  sun.intensity = el > 0 ? 0.6 + 2.6 * day : 0;
-  sun.color.setHSL(0.1, 0.75, 0.62 + 0.3 * day);      // warmer when the sun is low
-  hemi.color.set(0xcfe2f4); hemi.groundColor.set(0x8a7a62);
-  hemi.intensity = 0.35 + 0.75 * THREE.MathUtils.clamp((el + 6) / 30, 0, 1);
+  sun.intensity = el > 0 ? 0.9 + 1.0 * day : 0;
+  sun.color.setHSL(0.1, 0.6, 0.75 + 0.25 * day);      // slightly warmer when the sun is low
+  hemi.color.set(0xffffff); hemi.groundColor.set(0xe2ddd0);   // bright fill so shaded faces stay light
+  hemi.intensity = 1.0 + 0.5 * THREE.MathUtils.clamp((el + 6) / 30, 0, 1);
   const lbl = document.getElementById('sunlbl');
   if (lbl) lbl.textContent = `${String(Math.floor(hour)).padStart(2, '0')}:${String(Math.round((hour % 1) * 60)).padStart(2, '0')} · sun ${el.toFixed(0)}° high`;
 }
 vm.onStyle = (isReal) => {
   scene.background = isReal ? SKY : WHITE_BG;
-  const tm = isReal ? THREE.ACESFilmicToneMapping : THREE.NoToneMapping;
-  if (renderer.toneMapping !== tm) {
-    renderer.toneMapping = tm; renderer.toneMappingExposure = 1.0;
-    clippedMaterials.forEach(m => (m.needsUpdate = true));
-  }
   document.getElementById('sunrow').classList.toggle('off', !isReal);
   placeSun();
 };
@@ -78,7 +73,7 @@ function ensureComposer() {
   const rp = new RenderPass(scene, vm.persp);
   gtao = new GTAOPass(scene, vm.persp, stage.clientWidth, stage.clientHeight);
   gtao.updateGtaoMaterial({ radius: 0.6, distanceExponent: 1.5, thickness: 1.0, scale: 1.2, samples: 16 });
-  gtao.blendIntensity = 0.9;
+  gtao.blendIntensity = 0.45;
   composer.addPass(rp); composer.addPass(gtao); composer.addPass(new OutputPass());
   composer.setSize(stage.clientWidth, stage.clientHeight);
 }
@@ -105,15 +100,6 @@ function setView(k) {
 document.querySelectorAll('#layers input').forEach(inp => {
   inp.onchange = () => { vm.overrides[inp.dataset.layer] = inp.checked; vm.applyVisibility(); };
 });
-// style toggle
-const styleBtns = document.querySelectorAll('#style button');
-function setStyle(real) {
-  vm.realistic = real;
-  styleBtns.forEach(b => b.classList.toggle('on', (b.dataset.style === 'real') === real));
-  vm.applyVisibility();
-  try { localStorage.setItem('lpb-style', real ? 'real' : 'white'); } catch {}
-}
-styleBtns.forEach(b => (b.onclick = () => setStyle(b.dataset.style === 'real')));
 const slider = document.getElementById('sun');
 slider.value = hour;
 slider.oninput = () => { hour = +slider.value; placeSun(); };
@@ -121,20 +107,15 @@ slider.oninput = () => { hour = +slider.value; placeSun(); };
 document.getElementById('shot').onclick = () => {
   render();
   const a = document.createElement('a');
-  a.download = `LPB-001_${vm.key}${vm.isReal ? '_real' : ''}.png`; a.href = renderer.domElement.toDataURL('image/png'); a.click();
+  a.download = `LPB-001_${vm.key}.png`; a.href = renderer.domElement.toDataURL('image/png'); a.click();
 };
 window.addEventListener('resize', () => {
   vm.resize();
   if (composer) { composer.setSize(stage.clientWidth, stage.clientHeight); gtao.setSize(stage.clientWidth, stage.clientHeight); }
 });
 
-let start = 'persp', startReal = true;
-try {
-  const s = localStorage.getItem('lpb-view'); if (s && VIEWS[s]) start = s;
-  if (localStorage.getItem('lpb-style') === 'white') startReal = false;
-} catch {}
-vm.realistic = startReal;
-styleBtns.forEach(b => b.classList.toggle('on', (b.dataset.style === 'real') === startReal));
+let start = 'persp';
+try { const s = localStorage.getItem('lpb-view'); if (s && VIEWS[s]) start = s; } catch {}
 setView(start);
 
 renderer.setAnimationLoop(() => {
@@ -142,4 +123,4 @@ renderer.setAnimationLoop(() => {
   render();
   labelRenderer.render(scene, vm.camera);
 });
-window.__lpb = { vm, scene, setView, setStyle };   // for debugging
+window.__lpb = { vm, scene, setView };   // for debugging
