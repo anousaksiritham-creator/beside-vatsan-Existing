@@ -53,17 +53,30 @@ function levelMarks(side, ridge) {
     seg([a, b], g, lvlMat);
     label(`<span>${m.t}</span>`, 'lvl', lp, g);
   }
-  // overall height dimension text near the building
-  if (side === 'front') {
-    const y = -1.3;
-    seg([v(0.5, y, -9), v(9.4, y, -9)], g, dimMat); seg([v(0, y - 0.6, -9), v(11.9, y - 0.6, -9)], g, dimMat);
-    label('8.90', 'dim', v(4.95, y, -9), g); label('11.90 (plot)', 'dim', v(5.95, y - 0.6, -9), g);
+  elevGrid(side, g, ridge);
+}
+
+// Elevations / sections: column grid lines with bubbles and chained centre-to-centre dims.
+function elevGrid(side, g, ridge) {
+  const across = side === 'front' || side === 'rear';
+  const plane = { front: -9, rear: 36, left: -12, right: 14 }[side];
+  const P = (t, y) => (across ? v(t, y, plane) : v(plane, y, t));
+  const items = across ? D.GRID.x : D.GRID.z;
+  const t0 = items[0].v, t1 = items[items.length - 1].v;
+  const tk = (across ? new THREE.Vector3(1, 1, 0) : new THREE.Vector3(0, 1, 1)).normalize().multiplyScalar(0.18);
+  const dim = (a, b, y, text) => {
+    const p1 = P(a, y), p2 = P(b, y);
+    seg([p1, p2], g);
+    for (const p of [p1, p2]) seg([p.clone().sub(tk), p.clone().add(tk)], g);
+    label(text, 'dim', p1.clone().add(p2).multiplyScalar(0.5), g);
+  };
+  const yTop = ridge + 0.6, yC = -1.2, yO = -2.0, yB = -2.9;
+  for (const it of items) {
+    seg([P(it.v, yB + 0.35), P(it.v, yTop)], g, gridMat);
+    label(it.id, 'grid', P(it.v, yB), g);
   }
-  if (side === 'right') {
-    const y = -1.3;
-    seg([v(14, y, 0.5), v(14, y, 23)], g, dimMat); label('23.00', 'dim', v(14, y, 11.75), g);
-    seg([v(14, y - 0.6, 0), v(14, y - 0.6, 28.5)], g, dimMat); label('28.50 (plot)', 'dim', v(14, y - 0.6, 14.25), g);
-  }
+  for (let i = 0; i < items.length - 1; i++) dim(items[i].v, items[i + 1].v, yC, (items[i + 1].v - items[i].v).toFixed(2));
+  dim(t0, t1, yO, (t1 - t0).toFixed(2));
 }
 
 function roomLabels() {
