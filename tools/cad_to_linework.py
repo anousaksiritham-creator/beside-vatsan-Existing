@@ -6,7 +6,7 @@ Usage (needs ezdxf: pip install ezdxf):
     1. In AutoCAD: SAVEAS exiting_v2.dwg -> DXF 2018  (or use accoreconsole)
     2. python tools/cad_to_linework.py path/to/exiting_v2.dxf
 
-CAD -> data: x = (cadX + 106492) / 1000 (upper floor: cadX + 80922), z = (cadY - 12950) / 1000
+CAD -> data: x = (cadX + 160932) / 1000 (upper floor: cadX + 136727), z = (cadY - 12950) / 1000
 """
 import json
 import math
@@ -18,8 +18,9 @@ from ezdxf import bbox
 
 # plan windows in CAD units (x range, y range) and x offset to data coords
 FLOORS = {
-    "GF": {"x": (-106600, -94500), "y": (12900, 36000), "dx": 106492},
-    "1F": {"x": (-81000, -68900), "y": (12900, 36000), "dx": 80922},
+    # final-measure plans (17-11-2026), drawn inside the 12.2 x 28.5 m plot box
+    "GF": {"x": (-160950, -148700), "y": (12900, 36000), "dx": 160932},
+    "1F": {"x": (-136750, -124500), "y": (12900, 36000), "dx": 136727},
 }
 DY = -12950
 SKIP_LAYERS = {"EX-ROOM", "EX-DIM", "EX-TEXT", "EX-PHOTO", "EX-DEFECT", "EX-LEVEL", "TAXE", "Defpoints"}

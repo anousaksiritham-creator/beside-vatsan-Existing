@@ -46,8 +46,8 @@ function levelMarks(side, ridge) {
   const marks = D.LEVEL_MARKS.map(m => m.y === null ? { ...m, y: ridge, t: `+${ridge.toFixed(2)} ${m.t}` } : m);
   for (const m of marks) {
     let a, b, lp;   // lp = screen-left end of the line; text runs to the right, above the line
-    if (side === 'front')      { a = v(-2.0, m.y, -9);  b = v(10.4, m.y, -9);  lp = a; }
-    else if (side === 'rear')  { a = v(11.4, m.y, 36);  b = v(-1.0, m.y, 36);  lp = a; }
+    if (side === 'front')      { a = v(-2.0, m.y, -9);  b = v(10.7, m.y, -9);  lp = a; }
+    else if (side === 'rear')  { a = v(11.7, m.y, 36);  b = v(-1.0, m.y, 36);  lp = a; }
     else if (side === 'left')  { a = v(-12, m.y, 24);   b = v(-12, m.y, -1.5); lp = a; }
     else                       { a = v(14, m.y, -1.5);  b = v(14, m.y, 24);    lp = a; }
     seg([a, b], g, lvlMat);
@@ -88,9 +88,9 @@ function roomLabels() {
     label(`${code}${r.en}${area}`, 'room', v(r.x, y, r.z), g);
   }
   const s = D.SITE;
-  label(s.road.name, 'ctx', v(5.95, D.LEVELS.ground, -4.2), A('ctx-labels'));
+  label(s.road.name, 'ctx', v(6.1, D.LEVELS.ground, -4.2), A('ctx-labels'));
   label(s.temple.label, 'ctx', v(21, D.LEVELS.ground + s.temple.h + 1, 13), A('ctx-labels'));
-  label('LPB-001 · plot 11.9 × 28.5 m', 'ctx', v(5.95, D.LEVELS.ground, 29.6), A('ctx-labels'));
+  label(`LPB-001 · plot ${D.PLOT.x[1] - D.PLOT.x[0]} × ${D.PLOT.z[1] - D.PLOT.z[0]} m`, 'ctx', v(6.1, D.LEVELS.ground, 29.6), A('ctx-labels'));
 }
 
 // exact CAD plan linework (exiting_v2) drawn on top of the plan cut

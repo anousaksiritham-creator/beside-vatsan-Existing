@@ -391,9 +391,10 @@ function ffSlab() {
   // ceiling under roof with the opening (F04)
   const c = D.CEILING_HOLE, yc = D.LEVELS.ffCeiling, cg = G('ceiling');
   as('ceilingWhite', () => {
-    box(0.6, 9.3, yc, yc + 0.03, 2.6, c.z[0], M.floor, cg);
-    box(0.6, 9.3, yc, yc + 0.03, c.z[1], 17.4, M.floor, cg);
-    box(0.6, c.x[0], yc, yc + 0.03, c.z[0], c.z[1], M.floor, cg);
+    const [ix0, ix1] = [D.GRID.x[0].v, D.GRID.x[D.GRID.x.length - 1].v];   // inside faces of the side walls
+    box(ix0, ix1, yc, yc + 0.03, 2.6, c.z[0], M.floor, cg);
+    box(ix0, ix1, yc, yc + 0.03, c.z[1], 17.4, M.floor, cg);
+    box(ix0, c.x[0], yc, yc + 0.03, c.z[0], c.z[1], M.floor, cg);
   });
 }
 
@@ -416,24 +417,24 @@ function fixtures() {
 
 // ---------- realistic extras on the building ----------
 function buildingExtras() {
-  const gf = G('gf'), ff = G('ff');
-  realOnly('encaustic', () => box(0.5, 9.4, 0, 0.006, 0.5, 2.5, M.floor, gf));          // veranda floor tiles
+  const gf = G('gf'), lv = D.LEVELS.ff, c0 = lv - 0.22;
+  realOnly('encaustic', () => box(1.0, 9.7, 0, 0.006, 0.8, 2.5, M.floor, gf));          // veranda floor tiles
   realOnly('ochre', () => {                                                              // cornice at 1F floor level
-    box(0.45, 9.45, 3.28, 3.5, 17.5, 17.6, M.wall, gf);
-    box(0.4, 0.5, 3.28, 3.5, 17.5, 20.6, M.wall, gf); box(5.9, 6.0, 3.28, 3.5, 17.5, 20.6, M.wall, gf);
-    box(0.4, 6.0, 3.28, 3.5, 20.5, 20.6, M.wall, gf);
+    box(0.95, 9.75, c0, lv, 17.5, 17.6, M.wall, gf);
+    box(0.9, 1.0, c0, lv, 17.5, 20.3, M.wall, gf); box(6.2, 6.3, c0, lv, 17.5, 20.3, M.wall, gf);
+    box(0.9, 6.3, c0, lv, 20.2, 20.3, M.wall, gf);
   });
-  realOnly('pvc', () => rod([9.25, 0, 17.58], [9.25, 7.0, 17.58], 0.05, 0.05, M.wall, gf, 10));  // downpipe
+  realOnly('pvc', () => rod([9.55, 0, 17.58], [9.55, D.LEVELS.eave, 17.58], 0.05, 0.05, M.wall, gf, 10));  // downpipe
   // veranda column capitals and bases
+  const pt = D.COLUMNS[0].h;                                                             // veranda post top
   realOnly('plasterW', () => {
-    for (const gx of D.GRID.x) {
+    for (const x of D.VERANDA_POSTS) {
       const z = D.GRID.z[0].v;
-      box(gx.v - 0.16, gx.v + 0.16, 2.72, 2.85, z - 0.16, z + 0.16, M.wall, gf);
-      box(gx.v - 0.13, gx.v + 0.13, 2.62, 2.72, z - 0.13, z + 0.13, M.wall, gf);
-      box(gx.v - 0.14, gx.v + 0.14, 0, 0.22, z - 0.14, z + 0.14, M.wall, gf);
+      box(x - 0.16, x + 0.16, pt - 0.13, pt, z - 0.16, z + 0.16, M.wall, gf);
+      box(x - 0.13, x + 0.13, pt - 0.23, pt - 0.13, z - 0.13, z + 0.13, M.wall, gf);
+      box(x - 0.14, x + 0.14, 0, 0.22, z - 0.14, z + 0.14, M.wall, gf);
     }
   });
-  void ff;
 }
 
 // ---------- trees ----------
@@ -494,7 +495,7 @@ function site() {
   box(-30, 45, yg - 0.1, yg + 0.01, S.road.z[0], S.road.z[1], M.road, g);            // road
   const p = S.passage; as('brick', () => box(p.x[0], p.x[1], yg, yg + 0.03, p.z[0], p.z[1], M.floor, g));
   const pa = S.patio; as('terracotta', () => box(pa.x[0], pa.x[1], yg, yg + 0.03, pa.z[0], pa.z[1], M.floor, g));
-  realOnly('terracotta', () => box(0, 11.9, yg, yg + 0.03, pa.z[1], 28.4, M.floor, g));   // garden paving (photo)
+  realOnly('terracotta', () => box(D.PLOT.x[0], D.PLOT.x[1], yg, yg + 0.03, pa.z[1], 28.4, M.floor, g));   // garden paving (photo)
   realOnly('roadLine', () => {                                                             // road centre line
     const zc = (S.road.z[0] + S.road.z[1]) / 2;
     for (let x = -30; x < 45; x += 4) box(x, x + 2, yg + 0.01, yg + 0.016, zc - 0.06, zc + 0.06, M.road, g);
@@ -562,7 +563,7 @@ function hipBlock(xr, zr, e, pitch, g) {
 // realistic role of each slab (top / bottom / sides)
 const SLAB_ROLE = {
   'GF floor + plinth': { top: 'planksGrey', side: 'plinth' },
-  'Front step 1': 'plinth', 'Front step 2': 'plinth',
+  'Front step 1': 'plinth', 'Front step 2': 'plinth', 'Veranda plinth L': 'plinth', 'Veranda plinth R': 'plinth',
   'Annex floor': { top: 'terracottaK', side: 'ochre' },
   'Covered terrace': { top: 'terracotta', side: 'plinth' },
   'F08 floor (annex roof)': { top: 'planksDark', bottom: 'ceilingDark', side: 'ochre' },
@@ -571,15 +572,15 @@ const SLAB_ROLE = {
 function columnRole(c) {
   const z = c.z, ff = c.floor === '1F';
   if (!ff && z < 1) return 'plasterW';                                  // veranda posts
-  if (!ff && z > 22) return 'post';                                     // rear timber posts
+  if (!ff && z > 21) return 'post';                                     // rear timber posts
   if (z >= 17.4) return 'ochre';
-  if (c.x > 1 && c.x < 9) return 'interior';
+  if (c.x > 1.5 && c.x < 9.2) return 'interior';
   return ff ? 'plasterW' : 'plasterWBase';
 }
 
 export function buildModel(scene) {
   for (const w of D.WALLS) buildWall(w);
-  for (const s of D.SLABS) as(SLAB_ROLE[s.id] ?? null, () => box(s.x[0], s.x[1], s.y[0], s.y[1], s.z[0], s.z[1], M.floor, G(s.y[0] >= 3 ? 'ff' : 'gf')));
+  for (const s of D.SLABS) as(SLAB_ROLE[s.id] ?? null, () => box(s.x[0], s.x[1], s.y[0], s.y[1], s.z[0], s.z[1], M.floor, G(s.y[0] >= D.LEVELS.ff - 0.5 ? 'ff' : 'gf')));
   as({ top: 'planksDark', bottom: 'ceilingDark', side: 'plasterW' }, ffSlab);
   as('planksDark', stair); demolished(); as('concrete', fixtures);
   for (const c of D.COLUMNS) {
