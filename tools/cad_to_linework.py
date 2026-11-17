@@ -19,11 +19,13 @@ from ezdxf import bbox
 # plan windows in CAD units (x range, y range) and x offset to data coords
 FLOORS = {
     # final-measure plans (17-11-2026), drawn inside the 12.2 x 28.5 m plot box
-    "GF": {"x": (-160950, -148700), "y": (12900, 36000), "dx": 160932},
-    "1F": {"x": (-136750, -124500), "y": (12900, 36000), "dx": 136727},
+    # exact plot boxes in exiting_v2.dwg (outline lines excluded by the strict inequality)
+    "GF": {"x": (-160932, -148732), "y": (12950, 41450), "dx": 160932},
+    "1F": {"x": (-136727, -124527), "y": (12950, 41450), "dx": 136727},
 }
 DY = -12950
-SKIP_LAYERS = {"EX-ROOM", "EX-DIM", "EX-TEXT", "EX-PHOTO", "EX-DEFECT", "EX-LEVEL", "TAXE", "Defpoints"}
+# every layer inside the box is plan content; nothing is skipped
+SKIP_LAYERS = {"Defpoints"}
 
 
 def flatten(e, depth=0):
